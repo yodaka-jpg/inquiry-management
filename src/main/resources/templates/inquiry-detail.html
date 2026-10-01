@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="ja"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1"
+    >
+
+    <title>問い合わせ詳細</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 24px;
+            background: #f4f6f8;
+            color: #202124;
+            font-family:
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #ffffff;
+            border: 1px solid #d9dee3;
+            border-radius: 8px;
+            box-shadow:
+                0 2px 8px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 24px;
+            border-bottom: 1px solid #d9dee3;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 22px;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .link {
+            color: #1967d2;
+            text-decoration: none;
+        }
+
+        .logout-button {
+            padding: 7px 12px;
+            border: 1px solid #bdc1c6;
+            border-radius: 4px;
+            background: #ffffff;
+            cursor: pointer;
+        }
+
+        .section {
+            padding: 22px 24px;
+            border-bottom: 1px solid #d9dee3;
+        }
+
+        .section:last-child {
+            border-bottom: 0;
+        }
+
+        .section-title {
+            margin: 0 0 16px;
+            font-size: 17px;
+        }
+
+        .detail-row {
+            display: grid;
+            grid-template-columns: 110px 1fr;
+            gap: 12px;
+            margin: 10px 0;
+        }
+
+        .label {
+            color: #5f6368;
+            font-weight: 600;
+        }
+
+        .body-text {
+            white-space: pre-wrap;
+            line-height: 1.7;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 14px;
+            background: #e8f0fe;
+            color: #174ea6;
+            font-weight: 600;
+        }
+
+        .priority {
+            font-weight: 600;
+        }
+
+        .priority-HIGH {
+            color: #d93025;
+        }
+
+        .priority-MIDDLE {
+            color: #202124;
+        }
+
+        .priority-LOW {
+            color: #80868b;
+        }
+
+        .message {
+            margin: 16px 24px 0;
+            padding: 12px;
+            border-radius: 4px;
+        }
+
+        .message-success {
+            background: #e6f4ea;
+            color: #137333;
+        }
+
+        .message-error {
+            background: #fce8e6;
+            color: #c5221f;
+        }
+
+        .form-row {
+            margin: 16px 0;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .radio-item {
+            display: block;
+            margin: 8px 0;
+        }
+
+        textarea,
+        select {
+            width: 100%;
+            max-width: 520px;
+            padding: 10px;
+            border: 1px solid #bdc1c6;
+            border-radius: 4px;
+            font: inherit;
+        }
+
+        textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .character-count {
+            max-width: 520px;
+            margin-top: 4px;
+            color: #5f6368;
+            text-align: right;
+            font-size: 12px;
+        }
+
+        .action-button {
+            padding: 10px 18px;
+            border: 0;
+            border-radius: 4px;
+            background: #1967d2;
+            color: #ffffff;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .action-button:disabled {
+            background: #b8bcc2;
+            cursor: not-allowed;
+        }
+
+        .guidance-message {
+            margin: 12px 0;
+            color: #b06000;
+            font-size: 14px;
+        }
+
+        .history-item {
+            padding: 14px 0;
+            border-bottom: 1px solid #edf0f2;
+        }
+
+        .history-item:last-child {
+            border-bottom: 0;
+        }
+
+        .history-header {
+            margin-bottom: 6px;
+            color: #5f6368;
+            font-size: 13px;
+        }
+
+        .history-change {
+            font-weight: 600;
+        }
+
+        .history-comment {
+            margin-top: 6px;
+            color: #5f6368;
+            white-space: pre-wrap;
+        }
+
+        .empty-message {
+            color: #5f6368;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 0;
+            }
+
+            .container {
+                border: 0;
+                border-radius: 0;
+            }
+
+            .detail-row {
+                grid-template-columns: 1fr;
+                gap: 4px;
+            }
+
+            .header {
+                align-items: flex-start;
+                gap: 16px;
+            }
+
+            .header-actions {
+                flex-direction: column;
+                align-items: flex-end;
+                gap: 8px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<main class="container">
+    <header class="header">
+        <h1>問い合わせ詳細</h1>
+
+        <div class="header-actions">
+            <a class="link" th:href="@{/}">
+                一覧に戻る
+            </a>
+
+            <form
+                th:action="@{/logout}"
+                method="post"
+            >
+                <button
+                    class="logout-button"
+                    type="submit"
+                >
+                    ログアウト
+                </button>
+            </form>
+        </div>
+    </header>
+
+    <p
+        class="message message-success"
+        th:if="${successMessage != null}"
+        th:text="${successMessage}"
+    ></p>
+
+    <p
+        class="message message-error"
+        th:if="${errorMessage != null}"
+        th:text="${errorMessage}"
+    ></p>
+
+    <section class="section">
+        <div class="detail-row">
+            <div class="label">件名</div>
+            <div th:text="${view.title}"></div>
+        </div>
+
+        <div class="detail-row">
+            <div class="label">依頼者</div>
+            <div th:text="${view.requesterName}"></div>
+        </div>
+
+        <div class="detail-row">
+            <div class="label">優先度</div>
+
+            <div
+                class="priority"
+                th:classappend="${'priority-' + view.priorityCode}"
+                th:text="${view.priorityDisplayName}"
+            ></div>
+        </div>
+
+        <div class="detail-row">
+            <div class="label">登録日</div>
+            <div th:text="${view.createdAt}"></div>
+        </div>
+
+        <div class="detail-row">
+            <div class="label">本文</div>
+
+            <div
+                class="body-text"
+                th:text="${view.body}"
+            ></div>
+        </div>
+    </section>
+
+    <!-- V-02：遷移可能な値がなければ全体を非表示 -->
+    <section
+        class="section"
+        th:if="${not #lists.isEmpty(view.availableStatuses)}"
+    >
+        <h2 class="section-title">
+            ▼ ステータス変更
+        </h2>
+
+        <div class="form-row">
+            <span class="form-label">現在</span>
+
+            <span
+                class="status-badge"
+                th:text="${view.statusDisplayName}"
+            ></span>
+        </div>
+
+        <form
+            th:action="@{/inquiries/{id}/status(id=${view.id})}"
+            method="post"
+        >
+            <input
+                type="hidden"
+                name="updatedAt"
+                th:value="${view.updatedAtToken}"
+            >
+
+            <div class="form-row">
+                <span class="form-label">変更先</span>
+
+                <label
+                    class="radio-item"
+                    th:each="status, iteration : ${view.availableStatuses}"
+                >
+                    <input
+                        type="radio"
+                        name="nextStatus"
+                        th:value="${status.code}"
+                        th:checked="${iteration.first}"
+                    >
+
+                    <span
+                        th:text="${status.displayName}"
+                    ></span>
+                </label>
+            </div>
+
+            <div class="form-row">
+                <label
+                    class="form-label"
+                    for="comment"
+                >
+                    コメント（任意・200字以内）
+                </label>
+
+                <textarea
+                    id="comment"
+                    name="comment"
+                    maxlength="200"
+                    oninput="updateCharacterCount()"
+                ></textarea>
+
+                <div
+                    id="characterCount"
+                    class="character-count"
+                >
+                    0 / 200
+                </div>
+            </div>
+
+            <button
+                class="action-button"
+                type="submit"
+            >
+                ステータスを変更
+            </button>
+        </form>
+    </section>
+
+    <section class="section">
+        <h2 class="section-title">
+            ▼ 担当者割り当て
+        </h2>
+
+        <div class="form-row">
+            <span class="form-label">現在</span>
+            <span th:text="${view.assigneeName}"></span>
+        </div>
+
+        <p
+            class="guidance-message"
+            th:if="${view.showMemberRestrictionMessage}"
+        >
+            担当者の変更は管理者に依頼してください
+        </p>
+
+        <form
+            th:action="@{/inquiries/{id}/assignee(id=${view.id})}"
+            method="post"
+        >
+            <input
+                type="hidden"
+                name="updatedAt"
+                th:value="${view.updatedAtToken}"
+            >
+
+            <div class="form-row">
+                <label
+                    class="form-label"
+                    for="newAssigneeId"
+                >
+                    変更先
+                </label>
+
+                <select
+                    id="newAssigneeId"
+                    name="newAssigneeId"
+                    th:disabled="${view.assigneeChangeDisabled
+                        or (#lists.isEmpty(view.assignableUsers)
+                        and not view.canUnassign)}"
+                >
+                    <option
+                        value=""
+                        disabled
+                        selected
+                    >
+                        選択してください
+                    </option>
+
+                    <!-- V-03：管理者用の未割り当て -->
+                    <option
+                        th:if="${view.canUnassign}"
+                        value=""
+                    >
+                        未割り当て
+                    </option>
+
+                    <option
+                        th:each="user : ${view.assignableUsers}"
+                        th:value="${user.id}"
+                        th:text="${user.name}"
+                    ></option>
+                </select>
+            </div>
+
+            <button
+                class="action-button"
+                type="submit"
+                th:disabled="${view.assigneeChangeDisabled
+                    or (#lists.isEmpty(view.assignableUsers)
+                    and not view.canUnassign)}"
+            >
+                担当者を変更
+            </button>
+        </form>
+    </section>
+
+    <section class="section">
+        <h2 class="section-title">
+            ▼ 変更履歴（新しい順・最大20件）
+        </h2>
+
+        <!-- V-07 -->
+        <p
+            class="empty-message"
+            th:if="${#lists.isEmpty(view.histories)}"
+        >
+            変更履歴はありません
+        </p>
+
+        <div
+            class="history-item"
+            th:each="history : ${view.histories}"
+        >
+            <div class="history-header">
+                <span th:text="${history.changedAt}"></span>
+                <span th:text="${history.changedByName}"></span>
+            </div>
+
+            <div class="history-change">
+                <span
+                    th:text="${history.fieldDisplayName}"
+                ></span>
+
+                <span>：</span>
+
+                <span
+                    th:text="${history.oldDisplayValue}"
+                ></span>
+
+                <span> → </span>
+
+                <span
+                    th:text="${history.newDisplayValue}"
+                ></span>
+            </div>
+
+            <div
+                class="history-comment"
+                th:if="${history.comment != null
+                    and not #strings.isEmpty(history.comment)}"
+            >
+                コメント：
+                <span th:text="${history.comment}"></span>
+            </div>
+        </div>
+    </section>
+</main>
+
+<script>
+    function updateCharacterCount() {
+        const comment =
+            document.getElementById("comment");
+
+        const counter =
+            document.getElementById(
+                "characterCount"
+            );
+
+        counter.textContent =
+            comment.value.length + " / 200";
+    }
+</script>
+</body>
+</html>

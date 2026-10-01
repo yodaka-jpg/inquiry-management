@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ja"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1"
+    >
+
+    <title>ログイン確認</title>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 32px;
+            background: #f4f6f8;
+            color: #202124;
+            font-family:
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 24px;
+            background: #ffffff;
+            border: 1px solid #d9dee3;
+            border-radius: 8px;
+        }
+
+        h1 {
+            margin-top: 0;
+        }
+
+        .success {
+            padding: 12px;
+            background: #e6f4ea;
+            color: #137333;
+            border-radius: 4px;
+        }
+
+        .detail-row {
+            display: grid;
+            grid-template-columns: 140px 1fr;
+            margin: 12px 0;
+        }
+
+        .label {
+            font-weight: 600;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 10px 18px;
+            border: 0;
+            border-radius: 4px;
+            background: #1967d2;
+            color: #ffffff;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <main class="container">
+        <h1>ログイン確認</h1>
+
+        <p class="success">
+            ログインに成功しました。
+        </p>
+
+        <div class="detail-row">
+            <span class="label">氏名</span>
+            <span th:text="${userName}"></span>
+        </div>
+
+        <div class="detail-row">
+            <span class="label">ログインID</span>
+            <span th:text="${loginId}"></span>
+        </div>
+
+        <div class="detail-row">
+            <span class="label">権限</span>
+            <span th:text="${role}"></span>
+        </div>
+
+        <div class="detail-row">
+            <span class="label">Spring権限</span>
+            <span th:text="${authorities}"></span>
+        </div>
+
+        <form
+            th:action="@{/logout}"
+            method="post"
+        >
+            <button type="submit">
+                ログアウト
+            </button>
+        </form>
+    </main>
+</body>
+</html>
